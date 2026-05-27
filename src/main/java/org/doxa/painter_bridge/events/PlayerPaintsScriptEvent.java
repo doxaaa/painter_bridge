@@ -84,6 +84,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
 
     public PreApplyStageEvent event;
     private final HashMap<String, Integer> slidingTickCache = new HashMap<>();
+    private final HashMap<String, Boolean> cancellationCache = new HashMap<>();
 
     @EventHandler
     public void onPlayerPaints(PreApplyStageEvent event) {
@@ -96,13 +97,17 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
             return;
         }
 
-        // SLIDING TICK-WINDOW DEBOUNCE
         int currentTick = Bukkit.getCurrentTick();
         String blockKey = player.getUniqueId() + ":" + block.getX() + "," + block.getY() + "," + block.getZ();
 
+        // FIX: If clicking rapidly, inherit the last known cancellation state instead of letting it bypass
         if (slidingTickCache.containsKey(blockKey)) {
             int lastPaintedTick = slidingTickCache.get(blockKey);
             if ((currentTick - lastPaintedTick) <= 2) {
+                Boolean wasCancelled = cancellationCache.get(blockKey);
+                if (wasCancelled != null && wasCancelled) {
+                    event.setCancelled(true);
+                }
                 return;
             }
         }
@@ -111,9 +116,13 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
 
         if (slidingTickCache.size() > 150) {
             slidingTickCache.entrySet().removeIf(entry -> (currentTick - entry.getValue()) > 20);
+            cancellationCache.keySet().removeIf(key -> !slidingTickCache.containsKey(key));
         }
 
         fire();
+
+        // Save the outcome of the evaluation to enforce on rapid repeat packets
+        cancellationCache.put(blockKey, this.cancelled);
     }
 
     /**
