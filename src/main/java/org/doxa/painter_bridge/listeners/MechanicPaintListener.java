@@ -9,15 +9,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.HashSet;
 
 // DIRECT UNEARTHMECHANIC PRE-STAGE APPLY EVENT IMPORT
 import dev.wuason.unearthMechanic.events.PreApplyStageEvent;
 
 public class MechanicPaintListener implements Listener {
 
-    // Tracks: Key ("PlayerUUID:X,Y,Z") -> Value (The exact Bukkit tick integer when it ran)
-    private final HashMap<String, Integer> slidingTickCache = new HashMap<>();
+    private final HashSet<String> tickCache = new HashSet<>();
+    private int lastCleanedTick = -1;
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onUnearthPreStageApply(PreApplyStageEvent event) {
@@ -127,33 +127,35 @@ public class MechanicPaintListener implements Listener {
             block = player.getTargetBlockExact(5);
         }
 
+        // Ultimate safety check to prevent coordinate errors if player looks at empty sky
         if (block == null) {
             return;
         }
 
-        // 4. SLIDING TICK-WINDOW DEBOUNCE
+        // 4. COORDINATE-BASED TICK DEBOUNCE
         int currentTick = Bukkit.getCurrentTick();
-        String blockKey = player.getUniqueId() + ":" + block.getX() + "," + block.getY() + "," + block.getZ();
 
-        if (slidingTickCache.containsKey(blockKey)) {
-            int lastPaintedTick = slidingTickCache.get(blockKey);
-            if ((currentTick - lastPaintedTick) <= 2) {
-                return;
-            }
+        if (currentTick != lastCleanedTick) {
+            tickCache.clear();
+            lastCleanedTick = currentTick;
         }
 
-        slidingTickCache.put(blockKey, currentTick);
+        String cacheKey = player.getUniqueId() + ":"
+                + block.getX() + "," + block.getY() + "," + block.getZ() + ":"
+                + currentTick;
 
-        if (slidingTickCache.size() > 150) {
-            slidingTickCache.entrySet().removeIf(entry -> (currentTick - entry.getValue()) > 20);
+        if (tickCache.contains(cacheKey)) {
+            return;
         }
+        tickCache.add(cacheKey);
 
-        // 5. Fire straight into Denizen natively, skipping the middleman Bukkit event pipeline
-        if (PlayerPaintEvent.instance != null) {
-            boolean shouldCancel = PlayerPaintEvent.instance.fire(player, block);
-            if (shouldCancel) {
-                event.setCancelled(true);
-            }
+        // 5. Fire your custom bridge event passing BOTH parameters cleanly
+        PlayerPaintEvent customPaintEvent = new PlayerPaintEvent(player, block);
+        Bukkit.getPluginManager().callEvent(customPaintEvent);
+
+        // 6. Handle Denizen script cancellation flags
+        if (customPaintEvent.isCancelled()) {
+            event.setCancelled(true);
         }
     }
 }
