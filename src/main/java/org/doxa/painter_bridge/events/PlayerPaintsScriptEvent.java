@@ -39,14 +39,13 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     public Player player;
     public Block block;
 
+    // MATCHED HOOK: Using Depenizen/PlotSquared's explicit registration method inside the constructor
     public PlayerPaintsScriptEvent() {
         instance = this;
+        registerCouldMatcher("painter player paints block");
     }
 
-    @Override
-    public boolean couldMatch(ScriptPath path) {
-        return path.eventLower.startsWith("painter player paints block");
-    }
+    // REMOVED MANUALLY OVERRIDDEN couldMatch METHOD TO PREVENT PARSER OVERWRITES
 
     @Override
     public boolean matches(ScriptPath path) {
