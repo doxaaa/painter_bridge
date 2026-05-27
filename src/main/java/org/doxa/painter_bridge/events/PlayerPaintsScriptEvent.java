@@ -15,35 +15,25 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     // <--[event]
     // @Events
     // player paints
-    //
     // @Regex ^on player paints$
-    //
     // @Group Player
-    //
     // @Location true
-    //
     // @Cancellable true
-    //
-    // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
-    //
+    // @Triggers when a player modifies a block using a paintbrush tool.
     // @Context
-    // <context.location> returns the exact coordinate grid position of the block being painted.
-    //
+    // <context.location> returns the exact coordinate of the block/s being painted.
     // @Player Always.
-    //
     // -->
-
-
-    public PlayerPaintsScriptEvent() {
-        instance = this;
-        registerCouldMatcher("player paints");
-    }
-
 
     public static PlayerPaintsScriptEvent instance;
     public Player player;
     public Block block;
 
+    public PlayerPaintsScriptEvent() {
+        instance = this;
+    }
+
+    // THE ONLY PLACE "player paints" IS USED NATIVELY IN THE LOGIC
     @Override
     public boolean couldMatch(ScriptPath path) {
         return path.eventLower.startsWith("player paints");
@@ -67,10 +57,9 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
         return super.getContext(name);
     }
 
-    @Override
-    public String getName() {
-        return "PlayerPaints";
-    }
+    // REMOVED "PlayerPaints" HARDCODED METHOD.
+    // Denizen's engine automatically derives the proper system name by processing
+    // the couldMatch string directly, preventing double naming anomalies.
 
     /**
      * Custom entry point to fire data blocks natively into Denizen scripts
