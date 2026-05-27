@@ -14,14 +14,12 @@ public final class PainterBridge extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        // 1. Register your sliding-window item listener safely into Spigot
         Bukkit.getPluginManager().registerEvents(new MechanicPaintListener(), this);
 
-        // 2. DEPENIZEN INITIALIZATION ALIGNMENT:
         // Registers the class token directly into Denizen's engine.
         ScriptEvent.registerScriptEvent(PlayerPaintsScriptEvent.class);
 
-        getLogger().info("PainterBridge successfully loaded using Depenizen initialization architecture!");
+        getLogger().info("PainterBridge successfully loaded!");
     }
 
     @Override
