@@ -15,14 +15,46 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     // <--[event]
     // @Events
     // player paints
+    //
     // @Regex ^on player paints$
-    // @Group Player
-    // @Location true
-    // @Cancellable true
+    //
     // @Triggers when a player modifies a block using a paintbrush tool.
+    //
+    // @Location true
+    //
+    // @Cancellable true
     // @Context
     // <context.location> returns the exact coordinate of the block/s being painted.
+    //
+    // @Plugin Painter_Bridge, UnearthMechanic
+    //
     // @Player Always.
+    //
+    // @Group Depenizen
+    //
+    // -->
+
+    // <--[event]
+    // @Events
+    // essentials player balance changes
+    //
+    // @Regex ^on essentials player balance changes$
+    //
+    // @Triggers when a player's balance changes, when using Essentials economy.
+    //
+    // @Location true
+    //
+    // @Context
+    // <context.old_balance> Returns the balance before changes are made.
+    // <context.new_balance> Returns the balance after changes are made.
+    // <context.cause> returns the reason for the balance change, refer to <@link url https://github.com/EssentialsX/Essentials/blob/2.x/Essentials/src/main/java/net/ess3/api/events/UserBalanceUpdateEvent.java#L73-L78>.
+    //
+    // @Plugin Painter_Bridge, UnearthMechanic
+    //
+    // @Player Always.
+    //
+    // @Group PainterBridge
+    //
     // -->
 
     public static PlayerPaintsScriptEvent instance;
