@@ -57,27 +57,25 @@ public class PlayerPaintEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-
+    // <--[event]
+    // @Events
+    // player paints
+    //
+    // @Regex ^on player paints$
+    //
+    // @Group Player
+    //
+    // @Cancellable true
+    //
+    // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
+    //
+    // @Context
+    // <context.location> returns the exact coordinate grid position of the block being painted.
+    //
+    // @Player Always.
+    //
+    // -->
     public static class DenizenWrapper extends BukkitScriptEvent implements Listener {
-
-        // <--[event]
-        // @Events
-        // player paints
-        //
-        // @Regex ^on player paints$
-        //
-        // @Group Player
-        //
-        // @Cancellable true
-        //
-        // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
-        //
-        // @Context
-        // <context.location> returns the exact coordinate grid position of the block being painted.
-        //
-        // @Player Always.
-        //
-        // -->
 
         public static DenizenWrapper instance;
         private PlayerPaintEvent currentEvent;
