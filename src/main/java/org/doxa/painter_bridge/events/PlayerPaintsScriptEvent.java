@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listener {
 
@@ -83,8 +84,12 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     }
 
     public PreApplyStageEvent event;
+
+    // Multi-layered bypass defense tracking maps
     private final HashMap<String, Integer> slidingTickCache = new HashMap<>();
     private final HashMap<String, Boolean> cancellationCache = new HashMap<>();
+    private final HashMap<UUID, Integer> playerTickCache = new HashMap<>();
+    private final HashMap<UUID, Boolean> playerCancelCache = new HashMap<>();
 
     @EventHandler
     public void onPlayerPaints(PreApplyStageEvent event) {
@@ -98,12 +103,25 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
         }
 
         int currentTick = Bukkit.getCurrentTick();
-        String blockKey = player.getUniqueId() + ":" + block.getX() + "," + block.getY() + "," + block.getZ();
+        UUID playerUUID = player.getUniqueId();
+        String blockKey = playerUUID + ":" + block.getX() + "," + block.getY() + "," + block.getZ();
 
-        // FIX: If clicking rapidly, inherit the last known cancellation state instead of letting it bypass
+        // 1. GLOBAL PLAYER INTERCEPT (Deduplicates simultaneous swipe packets)
+        if (playerTickCache.containsKey(playerUUID)) {
+            int lastPlayerTick = playerTickCache.get(playerUUID);
+            if (currentTick == lastPlayerTick) {
+                Boolean wasPlayerCancelled = playerCancelCache.get(playerUUID);
+                if (wasPlayerCancelled != null && wasPlayerCancelled) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
+        // 2. BLOCK COORD INTERCEPT (Deduplicates simultaneous block click packets)
         if (slidingTickCache.containsKey(blockKey)) {
             int lastPaintedTick = slidingTickCache.get(blockKey);
-            if ((currentTick - lastPaintedTick) <= 2) {
+            if (currentTick == lastPaintedTick) {
                 Boolean wasCancelled = cancellationCache.get(blockKey);
                 if (wasCancelled != null && wasCancelled) {
                     event.setCancelled(true);
@@ -112,17 +130,26 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
             }
         }
 
+        // Update time tracking stamps
         slidingTickCache.put(blockKey, currentTick);
+        playerTickCache.put(playerUUID, currentTick);
 
+        // Memory cleanup cycles
         if (slidingTickCache.size() > 150) {
             slidingTickCache.entrySet().removeIf(entry -> (currentTick - entry.getValue()) > 20);
             cancellationCache.keySet().removeIf(key -> !slidingTickCache.containsKey(key));
         }
+        if (playerTickCache.size() > 50) {
+            playerTickCache.entrySet().removeIf(entry -> (currentTick - entry.getValue()) > 20);
+            playerCancelCache.keySet().removeIf(uuid -> !playerTickCache.containsKey(uuid));
+        }
 
+        // Process the Denizen script logic safely
         fire();
 
-        // Save the outcome of the evaluation to enforce on rapid repeat packets
+        // Save evaluation outcome states to both strict and fluid validation layers
         cancellationCache.put(blockKey, this.cancelled);
+        playerCancelCache.put(playerUUID, this.cancelled);
     }
 
     /**
