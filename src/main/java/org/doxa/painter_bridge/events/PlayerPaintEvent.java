@@ -12,14 +12,14 @@ import org.bukkit.event.Cancellable;
 
 public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
 
-
     // <--[event]
     // @Events
     // player paints
     //
-    // @Plugin painter_bridge
     // @Regex ^on player paints$
+    //
     // @Group Player
+    //
     // @Cancellable true
     //
     // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
@@ -87,12 +87,10 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
         this.player = player;
         this.block = block;
         this.isCancelledState = false;
-        this.cancelled = false; // Clear Denizen's native boolean before script runs
+        this.cancelled = false;
 
-        // 1. Triggers Denizen script processing execution frames natively
         this.fire();
 
-        // 2. Returns true if Denizen naturally marked the event as cancelled
-        return this.isCancelled();
+        return this.isCancelledState;
     }
 }
