@@ -1,10 +1,8 @@
 package org.doxa.painter_bridge;
 
-import org.doxa.painter_bridge.listeners.MechanicPaintListener;
 import org.doxa.painter_bridge.events.PlayerPaintsScriptEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
 import com.denizenscript.denizencore.events.ScriptEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PainterBridge extends JavaPlugin {
 
@@ -14,10 +12,8 @@ public final class PainterBridge extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        Bukkit.getPluginManager().registerEvents(new MechanicPaintListener(), this);
-
-        // Registers the class token directly into Denizen's engine.
-        ScriptEvent.registerScriptEvent(PlayerPaintsScriptEvent.class);
+        // Register the script instance directly into Denizen's listener architecture pipeline.
+        ScriptEvent.registerScriptEvent(new PlayerPaintsScriptEvent());
 
         getLogger().info("PainterBridge successfully loaded!");
     }
