@@ -29,7 +29,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     //
     // @Player Always.
     //
-    // @Group Player
+    // @Group PainterBridge
     //
     // -->
 
