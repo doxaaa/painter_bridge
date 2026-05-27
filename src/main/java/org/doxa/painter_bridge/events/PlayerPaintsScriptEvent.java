@@ -12,11 +12,14 @@ import org.bukkit.event.Listener;
 
 public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listener {
 
+
     // <--[event]
     // @Events
     // player paints
     //
     // @Regex ^on player paints$
+    //
+    // @Plugin painter_bridge
     //
     // @Group Player
     //
@@ -27,7 +30,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
     //
     // @Context
-    // <context.location> returns the exact coordinate grid position of the block being painted.
+    // <context.location> returns the exact coordinate grid position of the block being painted as a LocationTag.
     //
     // @Player Always.
     //
