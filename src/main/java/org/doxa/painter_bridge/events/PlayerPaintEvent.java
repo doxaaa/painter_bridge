@@ -20,12 +20,17 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Listener {
     //
     // @Group Player
     //
+    // @Location true
+    //
     // @Cancellable true
     //
     // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
     //
     // @Context
     // <context.location> returns the exact coordinate grid position of the block being painted.
+    //
+    // @Determine
+    // Used to cancel the event
     //
     // @Player Always.
     //
