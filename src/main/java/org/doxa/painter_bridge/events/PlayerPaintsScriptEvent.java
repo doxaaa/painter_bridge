@@ -16,7 +16,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     // @Events
     // player paints
     //
-    // @Regex ^on player paints [^\s]+$
+    // @Regex ^on player paints$
     //
     // @Group Player
     //
