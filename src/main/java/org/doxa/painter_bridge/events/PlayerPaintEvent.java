@@ -1,6 +1,8 @@
 package org.doxa.painter_bridge.events;
 
 import com.denizenscript.denizen.events.BukkitScriptEvent;
+
+import com.denizenscript.denizen.events.BukkitScriptEvent;
 import com.denizenscript.denizen.objects.LocationTag;
 import com.denizenscript.denizen.objects.PlayerTag;
 import com.denizenscript.denizen.utilities.implementation.BukkitScriptEntryData;
@@ -59,8 +61,6 @@ public class PlayerPaintEvent extends Event implements Cancellable {
 
 
     public static class DenizenWrapper extends BukkitScriptEvent implements Listener {
-
-        // --- NATIVE DENIZEN EVENT BINDING ---
 
         // <--[event]
         // @Events
