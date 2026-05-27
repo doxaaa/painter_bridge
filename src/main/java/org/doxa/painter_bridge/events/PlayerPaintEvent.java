@@ -8,38 +8,37 @@ import com.denizenscript.denizencore.objects.ObjectTag;
 import com.denizenscript.denizencore.scripts.ScriptEntryData;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
+import org.bukkit.event.Listener;
 
-
-public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
-
+public class PlayerPaintEvent extends BukkitScriptEvent implements Listener {
 
     // <--[event]
     // @Events
     // player paints
     //
-    // @Plugin painter_bridge
     // @Regex ^on player paints$
+    //
     // @Group Player
+    //
     // @Cancellable true
     //
     // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
     //
     // @Context
-    // <context.location> returns the exact coordinate grid position of the block being painted as a LocationTag.
+    // <context.location> returns the exact coordinate grid position of the block being painted.
     //
     // @Player Always.
     //
     // -->
 
-    public static PlayerPaintEvent instance;
-    private Player player;
-    private Block block;
-
     public PlayerPaintEvent() {
         instance = this;
         registerCouldMatcher("player paints");
     }
+
+    public static PlayerPaintEvent instance;
+    public Player player;
+    public Block block;
 
     @Override
     public boolean couldMatch(ScriptPath path) {
@@ -69,16 +68,6 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
         return "PlayerPaints";
     }
 
-    @Override
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    @Override
-    public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
-    }
-
     /**
      * Custom entry point to fire data blocks natively into Denizen scripts
      * @return true if Denizen requested a cancellation, false otherwise.
@@ -91,12 +80,11 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
         // 1. Fire the event and capture the executed instance handled by Denizen
         com.denizenscript.denizencore.events.ScriptEvent processedEvent = super.fire();
 
-        // 2. FIXED: Read the cancellation state directly without redundant casting
+        // 2. Read the cancellation state directly from the execution instance
         if (processedEvent != null) {
             return processedEvent.cancelled;
         }
 
         return this.cancelled;
     }
-
 }
