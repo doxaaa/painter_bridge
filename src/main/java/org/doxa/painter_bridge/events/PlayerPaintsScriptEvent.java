@@ -16,8 +16,6 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     // @Events
     // painter player paints block
     //
-    // @Regex ^on painter player paints block$
-    //
     // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
     //
     // @Location true
