@@ -26,7 +26,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     // @Context
     // <context.location> returns the exact coordinate of the block/s being painted.
     //
-    // @Plugin Painter_Bridge, unearthMechanic, Mechanics
+    // @Plugin painter_bridge
     //
     // @Player Always.
     //
