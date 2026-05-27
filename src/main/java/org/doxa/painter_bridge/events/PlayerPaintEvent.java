@@ -16,6 +16,28 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerPaintEvent extends Event implements Cancellable {
+
+    // <--[event]
+    // @Events
+    // player paints
+    //
+    // @Regex ^on player paints$
+    //
+    // @Group Player
+    //
+    // @Location true
+    //
+    // @Cancellable true
+    //
+    // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
+    //
+    // @Context
+    // <context.location> returns the exact coordinate grid position of the block being painted.
+    //
+    // @Player Always.
+    //
+    // -->
+
     private static final HandlerList HANDLERS = new HandlerList();
     private final Player player;
     private final Block block;
@@ -57,24 +79,7 @@ public class PlayerPaintEvent extends Event implements Cancellable {
         return HANDLERS;
     }
 
-    // <--[event]
-    // @Events
-    // player paints
-    //
-    // @Regex ^on player paints$
-    //
-    // @Group Player
-    //
-    // @Cancellable true
-    //
-    // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
-    //
-    // @Context
-    // <context.location> returns the exact coordinate grid position of the block being painted.
-    //
-    // @Player Always.
-    //
-    // -->
+
     public static class DenizenWrapper extends BukkitScriptEvent implements Listener {
 
         public static DenizenWrapper instance;
