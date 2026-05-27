@@ -10,7 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-public class PlayerPaintEvent extends BukkitScriptEvent implements Listener {
+public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listener {
 
     // <--[event]
     // @Events
@@ -29,19 +29,18 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Listener {
     // @Context
     // <context.location> returns the exact coordinate grid position of the block being painted.
     //
-    // @Determine
-    // Used to cancel the event
-    //
     // @Player Always.
     //
     // -->
 
-    public PlayerPaintEvent() {
+    // FIXED: Mapped constructor name to match class name exactly
+    public PlayerPaintsScriptEvent() {
         instance = this;
         registerCouldMatcher("player paints");
     }
 
-    public static PlayerPaintEvent instance;
+    // FIXED: Updated instance reference type mapping
+    public static PlayerPaintsScriptEvent instance;
     public Player player;
     public Block block;
 

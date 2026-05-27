@@ -1,7 +1,7 @@
 package org.doxa.painter_bridge;
 
 import org.doxa.painter_bridge.listeners.MechanicPaintListener;
-import org.doxa.painter_bridge.events.PlayerPaintEvent;
+import org.doxa.painter_bridge.events.PlayerPaintsScriptEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +13,7 @@ public final class PainterBridge extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MechanicPaintListener(), this);
 
         // 2. Register the standalone top-level event directly into Denizen's engine
-        PlayerPaintEvent denizenEvent = new PlayerPaintEvent();
+        PlayerPaintsScriptEvent denizenEvent = new PlayerPaintsScriptEvent();
         com.denizenscript.denizencore.events.ScriptEvent.registerScriptEvent(denizenEvent);
 
         getLogger().info("PainterBridge successfully loaded and mapped natively to Denizen!");

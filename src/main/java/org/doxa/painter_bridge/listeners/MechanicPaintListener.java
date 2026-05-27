@@ -1,6 +1,6 @@
 package org.doxa.painter_bridge.listeners;
 
-import org.doxa.painter_bridge.events.PlayerPaintEvent;
+import org.doxa.painter_bridge.events.PlayerPaintsScriptEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -148,8 +148,8 @@ public class MechanicPaintListener implements Listener {
         }
 
         // 5. Fire straight into Denizen natively, skipping the middleman Bukkit event pipeline
-        if (PlayerPaintEvent.instance != null) {
-            boolean shouldCancel = PlayerPaintEvent.instance.fire(player, block);
+        if (PlayerPaintsScriptEvent.instance != null) {
+            boolean shouldCancel = PlayerPaintsScriptEvent.instance.fire(player, block);
             if (shouldCancel) {
                 event.setCancelled(true);
             }
