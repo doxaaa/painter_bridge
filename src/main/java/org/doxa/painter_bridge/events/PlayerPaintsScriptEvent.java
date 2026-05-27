@@ -33,13 +33,13 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     //
     // -->
 
-    // FIXED: Mapped constructor name to match class name exactly
+
     public PlayerPaintsScriptEvent() {
         instance = this;
         registerCouldMatcher("player paints");
     }
 
-    // FIXED: Updated instance reference type mapping
+
     public static PlayerPaintsScriptEvent instance;
     public Player player;
     public Block block;
