@@ -10,31 +10,29 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
-
+// <--[event]
+// @Events
+// player paints
+//
+// @Plugin painter_bridge
+// @Regex ^on player paints$
+// @Group Player
+// @Cancellable true
+//
+// @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
+//
+// @Context
+// <context.location> returns the exact coordinate grid position of the block being painted as a LocationTag.
+//
+// @Player Always.
+//
+// -->
 public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
-
-    // <--[event]
-    // @Events
-    // player paints
-    //
-    // @Plugin painter_bridge
-    // @Regex ^on player paints$
-    // @Group Player
-    // @Cancellable true
-    //
-    // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
-    //
-    // @Context
-    // <context.location> returns the exact coordinate grid position of the block being painted as a LocationTag.
-    //
-    // @Player Always.
-    //
-    // -->
 
     public static PlayerPaintEvent instance;
     private Player player;
     private Block block;
-    private boolean cancelled = false;
+    private boolean isPluginCancelled = false;
 
     public PlayerPaintEvent() {
         instance = this;
@@ -53,7 +51,6 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
 
     @Override
     public ScriptEntryData getScriptEntryData() {
-        // Direct context injection mapping for the global <player> tag
         return new BukkitScriptEntryData(new PlayerTag(player), null);
     }
 
@@ -70,14 +67,16 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
         return "PlayerPaints";
     }
 
+    // Required by Denizen's core engine to let scripts interact with determine cancelled
     @Override
     public boolean isCancelled() {
-        return this.cancelled;
+        return this.isPluginCancelled || this.cancelled;
     }
 
     @Override
     public void setCancelled(boolean cancel) {
-        this.cancelled = cancel;
+        this.isPluginCancelled = cancel;
+        this.cancelled = cancel; // Sync with Denizen's internal Boolean state tracker
     }
 
     /**
@@ -86,11 +85,14 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
     public boolean fire(Player player, Block block) {
         this.player = player;
         this.block = block;
-        this.cancelled = false;
+        this.isPluginCancelled = false;
+        this.cancelled = false; // Reset Denizen's background state before execution loop
 
-        // Triggers Denizen script processing execution frames natively
+        // 1. Triggers Denizen script processing execution frames natively
         this.fire();
 
-        return this.cancelled;
+        // 2. FIXED: Explicitly query Denizen's internal field tracker.
+        // If a script ran '- determine cancelled', Denizen sets 'this.cancelled' to true.
+        return this.isCancelled();
     }
 }
