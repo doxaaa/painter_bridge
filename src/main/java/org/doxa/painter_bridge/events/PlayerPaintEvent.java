@@ -58,6 +58,23 @@ public class PlayerPaintEvent extends Event implements Cancellable {
     }
 
     // --- NATIVE DENIZEN EVENT BINDING ---
+
+
+    // <--[event]
+    // @Events
+    // player paints
+    //
+    // @Regex ^player paints$
+    //
+    // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
+    //
+    // @Context
+    // location (LocationTag) returns the exact coordinate grid position of the block being painted.
+    //
+    // @Determine
+    // "cancelled" to stop the block from being modified.
+    //
+    // -->
     public static class DenizenWrapper extends BukkitScriptEvent implements Listener {
         public static DenizenWrapper instance;
         private PlayerPaintEvent currentEvent;
