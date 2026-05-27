@@ -1,8 +1,6 @@
 package org.doxa.painter_bridge.events;
 
 import com.denizenscript.denizen.events.BukkitScriptEvent;
-
-import com.denizenscript.denizen.events.BukkitScriptEvent;
 import com.denizenscript.denizen.objects.LocationTag;
 import com.denizenscript.denizen.objects.PlayerTag;
 import com.denizenscript.denizen.utilities.implementation.BukkitScriptEntryData;
