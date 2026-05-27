@@ -45,7 +45,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
 
     @Override
     public boolean couldMatch(ScriptPath path) {
-        return path.eventLower.startsWith("player paints");
+        return path.eventLower.startsWith("painter player paints block");
     }
 
     @Override
