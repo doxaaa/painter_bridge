@@ -14,13 +14,13 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
 
     // <--[event]
     // @Events
-    // painter player paints block
+    // unearthmechanic player paints block
+    //
+    // @Cancellable true
     //
     // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
     //
     // @Location true
-    //
-    // @Cancellable true
     //
     // @Context
     // <context.location> Returns the exact coordinate location of the block being painted as a LocationTag.
@@ -37,10 +37,10 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     public Player player;
     public Block block;
 
-    // MATCHED HOOK: Using Depenizen/PlotSquared's explicit registration method inside the constructor
+
     public PlayerPaintsScriptEvent() {
         instance = this;
-        registerCouldMatcher("painter player paints block");
+        registerCouldMatcher("unearthmechanic player paints block");
     }
 
     // REMOVED MANUALLY OVERRIDDEN couldMatch METHOD TO PREVENT PARSER OVERWRITES
