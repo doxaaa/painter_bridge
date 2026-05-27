@@ -9,15 +9,14 @@ public final class PainterBridge extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // 1. Register your Unearth mechanic block interceptor listener safely
+        // 1. Register your sliding-window item listener safely into Spigot
         Bukkit.getPluginManager().registerEvents(new MechanicPaintListener(), this);
 
-        // 2. Register the wrapper class into Denizen's syntax vocabulary registry ONLY
-        // Removing the manual Bukkit registration line here completely fixes the double-firing!
-        PlayerPaintEvent.DenizenWrapper denizenEvent = new PlayerPaintEvent.DenizenWrapper();
+        // 2. Register the standalone top-level event directly into Denizen's engine
+        PlayerPaintEvent denizenEvent = new PlayerPaintEvent();
         com.denizenscript.denizencore.events.ScriptEvent.registerScriptEvent(denizenEvent);
 
-        getLogger().info("PainterBridge successfully loaded and double-firing fixed!");
+        getLogger().info("PainterBridge successfully loaded and mapped natively to Denizen!");
     }
 
     @Override

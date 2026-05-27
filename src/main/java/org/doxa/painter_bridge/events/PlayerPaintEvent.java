@@ -9,18 +9,13 @@ import com.denizenscript.denizencore.scripts.ScriptEntryData;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
 
-public class PlayerPaintEvent extends Event implements Cancellable {
+public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
+
 
     // <--[event]
     // @Events
     // player paints
-    // <player> paints
     //
     // @Plugin painter_bridge
     // @Regex ^on player paints$
@@ -36,89 +31,68 @@ public class PlayerPaintEvent extends Event implements Cancellable {
     //
     // -->
 
-    private static final HandlerList HANDLERS = new HandlerList();
-    private final Player player;
-    private final Block block;
-    private boolean cancelled = false;
+    public static PlayerPaintEvent instance;
+    private Player player;
+    private Block block;
+    private boolean isCancelledState = false;
 
-    public PlayerPaintEvent(@NotNull Player player, Block block) {
-        this.player = player;
-        this.block = block;
+    public PlayerPaintEvent() {
+        instance = this;
+        registerCouldMatcher("player paints");
     }
 
-    @NotNull
-    public Player getPlayer() {
-        return this.player;
+    @Override
+    public boolean couldMatch(ScriptPath path) {
+        return path.eventLower.startsWith("player paints");
     }
 
-    public Block getBlock() {
-        return this.block;
+    @Override
+    public boolean matches(ScriptPath path) {
+        return super.matches(path);
+    }
+
+    @Override
+    public ScriptEntryData getScriptEntryData() {
+        return new BukkitScriptEntryData(new PlayerTag(player), null);
+    }
+
+    @Override
+    public ObjectTag getContext(String name) {
+        if (name.equals("location") && block != null) {
+            return new LocationTag(block.getLocation());
+        }
+        return super.getContext(name);
+    }
+
+    @Override
+    public String getName() {
+        return "PlayerPaints";
     }
 
     @Override
     public boolean isCancelled() {
-        return this.cancelled;
+        return this.isCancelledState || this.cancelled;
     }
 
     @Override
     public void setCancelled(boolean cancel) {
+        this.isCancelledState = cancel;
         this.cancelled = cancel;
     }
 
-    @NotNull
-    @Override
-    public HandlerList getHandlers() {
-        return HANDLERS;
-    }
+    /**
+     * Custom entry point to fire data blocks natively into Denizen scripts
+     */
+    public boolean fire(Player player, Block block) {
+        this.player = player;
+        this.block = block;
+        this.isCancelledState = false;
+        this.cancelled = false; // Clear Denizen's native boolean before script runs
 
-    @SuppressWarnings("unused")
-    @NotNull
-    public static HandlerList getHandlerList() {
-        return HANDLERS;
-    }
+        // 1. Triggers Denizen script processing execution frames natively
+        this.fire();
 
-    // --- NATIVE DENIZEN EVENT BINDING ---
-    public static class DenizenWrapper extends BukkitScriptEvent implements Listener {
-        public static DenizenWrapper instance;
-        private PlayerPaintEvent currentEvent;
-
-        public DenizenWrapper() {
-            instance = this;
-            registerCouldMatcher("player paints");
-        }
-
-        @Override
-        public boolean couldMatch(ScriptPath path) {
-            return path.eventLower.startsWith("player paints");
-        }
-
-        @Override
-        public boolean matches(ScriptPath path) {
-            return super.matches(path);
-        }
-
-        @Override
-        public ScriptEntryData getScriptEntryData() {
-            return new BukkitScriptEntryData(new PlayerTag(currentEvent.getPlayer()), null);
-        }
-
-        @Override
-        public ObjectTag getContext(String name) {
-            if (name.equals("location") && currentEvent.getBlock() != null) {
-                return new LocationTag(currentEvent.getBlock().getLocation());
-            }
-            return super.getContext(name);
-        }
-
-        @Override
-        public String getName() {
-            return "PlayerPaints";
-        }
-
-        @EventHandler
-        public void onPaint(PlayerPaintEvent event) {
-            this.currentEvent = event;
-            fire(event);
-        }
+        // 2. Returns true if Denizen naturally marked the event as cancelled
+        return this.isCancelled();
     }
 }
