@@ -74,6 +74,14 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
         return super.getContext(name);
     }
 
+    @Override
+    public void cancellationChanged() {
+        if (cancelled && event != null) {
+            event.setCancelled(true);
+        }
+        super.cancellationChanged();
+    }
+
     public PreApplyStageEvent event;
     private final HashMap<String, Integer> slidingTickCache = new HashMap<>();
 
@@ -88,7 +96,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
             return;
         }
 
-        // SLIDING TICK-WINDOW DEBOUNCE (Restored from your listener)
+        // SLIDING TICK-WINDOW DEBOUNCE
         int currentTick = Bukkit.getCurrentTick();
         String blockKey = player.getUniqueId() + ":" + block.getX() + "," + block.getY() + "," + block.getZ();
 
@@ -105,12 +113,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
             slidingTickCache.entrySet().removeIf(entry -> (currentTick - entry.getValue()) > 20);
         }
 
-        // Execute script execution pipeline
         fire();
-
-        if (this.cancelled) {
-            event.setCancelled(true);
-        }
     }
 
     /**
@@ -136,7 +139,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
             for (Field field : event.getClass().getDeclaredFields()) {
                 if (Player.class.isAssignableFrom(field.getType()) || field.getType().getName().toLowerCase().contains("player")) {
                     field.setAccessible(true);
-                    Object value = field.get(field);
+                    Object value = field.get(event);
                     if (value instanceof Player) {
                         return (Player) value;
                     }
