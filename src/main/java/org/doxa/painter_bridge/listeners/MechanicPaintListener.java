@@ -147,7 +147,7 @@ public class MechanicPaintListener implements Listener {
             slidingTickCache.entrySet().removeIf(entry -> (currentTick - entry.getValue()) > 20);
         }
 
-        // 5. Fire straight into Denizen natively, skipping the middleman Bukkit event pipeline
+        // 5. Fire straight into Denizen natively via the active instance variable mapping
         if (PlayerPaintsScriptEvent.instance != null) {
             boolean shouldCancel = PlayerPaintsScriptEvent.instance.fire(player, block);
             if (shouldCancel) {

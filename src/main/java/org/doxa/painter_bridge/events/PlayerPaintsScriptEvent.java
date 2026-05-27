@@ -18,7 +18,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     //
     // @Regex ^on player paints$
     //
-    // @Triggers when a player modifies a block using a paintbrush tool.
+    // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
     //
     // @Location true
     //
@@ -31,7 +31,7 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
     //
     // @Player Always.
     //
-    // @Group Depenizen
+    // @Group PainterBridge
     //
     // -->
 
@@ -43,7 +43,6 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
         instance = this;
     }
 
-    // THE ONLY PLACE "player paints" IS USED NATIVELY IN THE LOGIC
     @Override
     public boolean couldMatch(ScriptPath path) {
         return path.eventLower.startsWith("player paints");
@@ -67,9 +66,10 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
         return super.getContext(name);
     }
 
-    // REMOVED "PlayerPaints" HARDCODED METHOD.
-    // Denizen's engine automatically derives the proper system name by processing
-    // the couldMatch string directly, preventing double naming anomalies.
+    @Override
+    public String getName() {
+        return "PlayerPaints";
+    }
 
     /**
      * Custom entry point to fire data blocks natively into Denizen scripts
@@ -80,10 +80,9 @@ public class PlayerPaintsScriptEvent extends BukkitScriptEvent implements Listen
         this.block = block;
         this.cancelled = false; // Reset local state before script execution
 
-        // 1. Fire the event and capture the executed instance handled by Denizen
+        // Fire the event and capture the executed instance handled by Denizen
         com.denizenscript.denizencore.events.ScriptEvent processedEvent = super.fire();
 
-        // 2. Read the cancellation state directly from the execution instance
         if (processedEvent != null) {
             return processedEvent.cancelled;
         }
