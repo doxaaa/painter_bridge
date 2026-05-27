@@ -10,16 +10,17 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
+
 public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
+
 
     // <--[event]
     // @Events
     // player paints
     //
+    // @Plugin painter_bridge
     // @Regex ^on player paints$
-    //
     // @Group Player
-    //
     // @Cancellable true
     //
     // @Triggers when a player modifies a block layer footprint using the UnearthMechanic paintbrush tool.
@@ -34,7 +35,6 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
     public static PlayerPaintEvent instance;
     private Player player;
     private Block block;
-    private boolean isCancelledState = false;
 
     public PlayerPaintEvent() {
         instance = this;
@@ -71,26 +71,32 @@ public class PlayerPaintEvent extends BukkitScriptEvent implements Cancellable {
 
     @Override
     public boolean isCancelled() {
-        return this.isCancelledState || this.cancelled;
+        return this.cancelled;
     }
 
     @Override
     public void setCancelled(boolean cancel) {
-        this.isCancelledState = cancel;
         this.cancelled = cancel;
     }
 
     /**
      * Custom entry point to fire data blocks natively into Denizen scripts
+     * @return true if Denizen requested a cancellation, false otherwise.
      */
     public boolean fire(Player player, Block block) {
         this.player = player;
         this.block = block;
-        this.isCancelledState = false;
-        this.cancelled = false;
+        this.cancelled = false; // Reset local state before script execution
 
-        this.fire();
+        // 1. Fire the event and capture the executed instance handled by Denizen
+        com.denizenscript.denizencore.events.ScriptEvent processedEvent = super.fire();
 
-        return this.isCancelledState;
+        // 2. FIXED: Read the cancellation state directly without redundant casting
+        if (processedEvent != null) {
+            return processedEvent.cancelled;
+        }
+
+        return this.cancelled;
     }
+
 }
